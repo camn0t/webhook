@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Webhook</title>
+    <style>
+        .message {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .success {
+            color: green;
+        }
+        .error {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Webhook</h1>
+    <form id="messageForm">
+        <label for="webhookUrl">URL</label>
+        <input type="url" id="webhookUrl" name="webhookUrl" required>
+        <br>
+        <label for="message">Message</label>
+        <input type="text" id="message" name="message" required>
+        <br>
+        <button type="submit">Send</button>
+    </form>
+    <div id="statusMessage" class="message"></div>
+
+    <script>
+        document.getElementById('messageForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const message = document.getElementById('message').value;
+            const webhookUrl = document.getElementById('webhookUrl').value;
+            const statusMessage = document.getElementById('statusMessage');
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: message }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                statusMessage.textContent = 'Message sent';
+                statusMessage.className = 'message success';
+                document.getElementById('message').value = ''; // Clear the message input
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                statusMessage.textContent = 'Error. Message not sent';
+                statusMessage.className = 'message error';
+            });
+        });
+    </script>
+</body>
+</html>
